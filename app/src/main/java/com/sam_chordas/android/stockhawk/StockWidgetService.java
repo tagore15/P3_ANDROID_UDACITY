@@ -3,6 +3,7 @@ package com.sam_chordas.android.stockhawk;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -64,12 +65,14 @@ public class StockWidgetService extends RemoteViewsService {
 
         public void initData()
         {
+            long identityToken = Binder.clearCallingIdentity();
             mCursor = mContext.getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
                     new String[]{ QuoteColumns._ID, QuoteColumns.SYMBOL, QuoteColumns.BIDPRICE,
                     QuoteColumns.PERCENT_CHANGE, QuoteColumns.CHANGE, QuoteColumns.ISUP},
                     QuoteColumns.ISCURRENT + " = ?",
                     new String[]{"1"},
                     null);
+            Binder.restoreCallingIdentity(identityToken);
         }
         @Override
         public RemoteViews getViewAt(int position) {
@@ -84,6 +87,10 @@ public class StockWidgetService extends RemoteViewsService {
             view.setTextViewText(R.id.stock_symbol, symbol);
             view.setTextViewText(R.id.bid_price, price);
             view.setTextViewText(R.id.change, change);
+
+            Intent fillInIntent = new Intent();
+            fillInIntent.putExtra("symbol", symbol);
+            view.setOnClickFillInIntent(R.id.list_item, fillInIntent);
 
             return view;
         }
