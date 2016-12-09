@@ -90,7 +90,7 @@ public class StockWidgetService extends RemoteViewsService {
 
             Intent fillInIntent = new Intent();
             fillInIntent.putExtra("symbol", symbol);
-            view.setOnClickFillInIntent(R.id.list_item, fillInIntent);
+            view.setOnClickFillInIntent(R.id.list_item_q, fillInIntent);
 
             return view;
         }
