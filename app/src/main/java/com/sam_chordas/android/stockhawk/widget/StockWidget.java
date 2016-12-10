@@ -1,4 +1,4 @@
-package com.sam_chordas.android.stockhawk;
+package com.sam_chordas.android.stockhawk.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.ui.DetailActivity;
 
 /**
@@ -20,11 +21,6 @@ public class StockWidget extends AppWidgetProvider {
         // CharSequence widgetText = context.getString(R.string.appwidget_text);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.stock_widget);
-
-        // create an intent to launch MainActivity
-        /*Intent intent = new Intent(context, MyStocksActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.listWidgetView, pIntent);*/
 
         // setup the collection
         Intent widgetIntent = new Intent(context, StockWidgetService.class);

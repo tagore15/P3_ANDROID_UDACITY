@@ -33,6 +33,7 @@ public class Utils {
         if (count == 1){
           jsonObject = jsonObject.getJSONObject("results")
               .getJSONObject("quote");
+          // handling invalid stock case
           if (jsonObject.getString("Open") == "null")
           {
             return null;

@@ -4,7 +4,6 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.gcm.TaskParams;
 
@@ -30,10 +29,6 @@ public class StockIntentService extends IntentService {
     }
     // We can call OnRunTask from the intent service to force it to run immediately instead of
     // scheduling a task.
-    int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
-    if (result == -1)
-    {
-        Toast.makeText(StockIntentService.this, "invalid stock", Toast.LENGTH_SHORT).show();
-    }
+    stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
   }
 }

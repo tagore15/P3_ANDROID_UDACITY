@@ -33,8 +33,10 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
+// class for launching plot of a stock
 public class DetailActivity extends Activity {
     LineDataSet dataset;
     LineChart lineChart;
@@ -46,8 +48,10 @@ public class DetailActivity extends Activity {
 
         Intent myIntent = getIntent();
         String symbol = myIntent.getExtras().getString("symbol");
-        FetchStockQuotes fetchStockTask = new FetchStockQuotes();
         lineChart = (LineChart)findViewById(R.id.chart);
+
+        FetchStockQuotes fetchStockTask = new FetchStockQuotes();
+        // fetching stock data corresponding to symbol and display plot
         fetchStockTask.execute(symbol);
     }
 
@@ -69,12 +73,7 @@ public class DetailActivity extends Activity {
             public String getFormattedValue(float value, AxisBase axis) {
                 // "value" represents the position of the label on the axis (x or y)
                 return mValues[(int) value];
-                //return "2";
             }
-
-            /** this is only needed if numbers are returned, else return 0 */
-            /*@Override
-            public int getDecimalDigits() { return 0; }*/
         }
 
         @Override
@@ -95,12 +94,6 @@ public class DetailActivity extends Activity {
             labelsArr = labels.toArray(labelsArr);
             xAxis.setValueFormatter(new MyXAxisValueFormatter(labelsArr));
             xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-            /*{
-                @Override
-                public String getFormattedValue(float value, AxisBase axis) {
-                    return labels.get((int) value);
-                }});
-            }*/
         }
 
         private boolean checkInternetConnection() {
@@ -118,12 +111,12 @@ public class DetailActivity extends Activity {
         {
             if (checkInternetConnection() == false)
             {
-                Log.e(TAG_FETCH, "NOT CONNECTED");
+                Log.d(TAG_FETCH, "NOT CONNECTED");
                 return null;
             }
             else
             {
-                Log.e(TAG_FETCH, "CONNECTED");
+                Log.d(TAG_FETCH, "CONNECTED");
                 try {
                     String urlStr="https://query.yahooapis.com/v1/public/yql";
                     String Search="format";
@@ -136,18 +129,17 @@ public class DetailActivity extends Activity {
                     String Call="callback";
                     String CallVal="";
                     Uri buildUri;
-                    Log.e("SYMBOL", symbol[0]);
-                    /*Calendar c = Calendar.getInstance();
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    String startDate = sdf.format(c.getTime());
-                    c.add(Calendar.YEAR, -1);
-                    String endDate = sdf.format(c.getTime());*/
+                    Log.d("SYMBOL", symbol[0]);
 
+                    Calendar c = Calendar.getInstance();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                    String endDate = sdf.format(c.getTime());
+                    c.add(Calendar.MONTH, -1);
+                    String startDate = sdf.format(c.getTime());
                     String query="Select * from yahoo.finance.historicaldata where symbol ='"
-                            + symbol[0] + "' and startDate = '2016-01-01' and endDate = '2016-01-25'";
-                    //String query ="Select * from yahoo.finance.historicaldata where symbol ='"
-                    //            + symbol[0] + "' and startDate = '" + startDate
-                    //            + "' and endDate = '" + endDate + "'";
+                              + symbol[0] + "' and startDate = '" +
+                              startDate + "' and endDate = '" + endDate + "'";
+
                     buildUri=Uri.parse(urlStr).buildUpon()
                             .appendQueryParameter(QueryKey,query)
                             .appendQueryParameter(Search,SearchVal)
@@ -155,7 +147,7 @@ public class DetailActivity extends Activity {
                             .appendQueryParameter(Env,EnvVal)
                             .appendQueryParameter(Call,CallVal)
                             .build();
-                    Log.e("DEBUGGING", buildUri.toString());
+                    Log.d(TAG_FETCH, buildUri.toString());
 
                     URL url = new URL(buildUri.toString());
 
@@ -172,16 +164,15 @@ public class DetailActivity extends Activity {
                     while ((data = reader.readLine()) != null) {
                         webPage += data + '\n';
                     }
-                    Log.e(TAG_FETCH, webPage);
+                    Log.d(TAG_FETCH, webPage);
                     try {
                         ArrayList<Entry> entries = new ArrayList<Entry>();
                         JSONObject jsObj = new JSONObject(webPage);
                         JSONArray jsArray = jsObj.getJSONObject("query").getJSONObject("results").getJSONArray("quote");
-                        //JSONArray jsArray = jsObj.getJSONArray("quote");
                         for (int i = jsArray.length()-1, k = 0; i > 0; i--) {
                             JSONObject jsQuoteObj = jsArray.getJSONObject(i);
                             float value = ((float) Float.parseFloat(jsQuoteObj.getString("Close")));
-                            Log.v("QUOTE VALUE", String.valueOf(value));
+                            Log.d("QUOTE VALUE", String.valueOf(value));
                             entries.add(new Entry((float)k, value));
 
                             String date = jsQuoteObj.getString("Date");
@@ -198,25 +189,9 @@ public class DetailActivity extends Activity {
                             k++;
                         }
                         dataset = new LineDataSet(entries, "Stock Values");
-                        //LineChart lineChart = (LineChart)findViewById(R.id.chart);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    /*JSONArray jsArr = jsObj.getJSONArray("results");
-
-                    mb = new MovieInfo[jsArr.length()];
-
-                    for (int i = 0; i < jsArr.length(); i++) {
-                        mb[i] = new MovieInfo();
-                        JSONObject js_arr_obj = jsArr.getJSONObject(i);
-                        mb[i].id = js_arr_obj.getString("id");
-                        mb[i].title = js_arr_obj.getString("title");
-                        mb[i].poster = js_arr_obj.getString("poster_path");
-                        mb[i].overview = js_arr_obj.getString("overview");
-                        mb[i].release_date = js_arr_obj.getString("release_date");
-                        mb[i].vote_average = js_arr_obj.getString("vote_average");
-                    }*/
                 }
                 catch (MalformedURLException e) {
                     e.printStackTrace();
@@ -224,9 +199,6 @@ public class DetailActivity extends Activity {
                 catch (IOException e) {
                     e.printStackTrace();
                 }
-                /*catch (JSONException e) {
-                    e.printStackTrace();
-                }*/
             }
             return null;
         }
